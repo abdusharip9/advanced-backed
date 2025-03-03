@@ -11,7 +11,8 @@ app.use(fileUpload({}));
 app.use(express.static("static"));
 
 // Routes
-app.use("/api/post", require("./routers/post.router.js"));
+app.use("/api/post", require("./routers/post.route.js"));
+app.use("/api/auth", require("./routers/auth.route.js"));
 
 const PORT = process.env.PORT || 8080;
 const DB_URL = process.env.DB_URL;
