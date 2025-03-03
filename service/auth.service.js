@@ -2,6 +2,7 @@ const { model } = require("mongoose");
 const UserDto = require("../dtos/user.dto");
 const userModel = require("../models/user.model");
 const bcrypt = require("bcrypt");
+const tokenService = require("./token.service");
 
 class AuthService {
   async register(email, password) {
@@ -14,11 +15,14 @@ class AuthService {
     }
 
     const hashPassword = await bcrypt.hash(password, 10);
-    const user = await userModel.create({ email, pasword: hashPassword });
+    const user = await userModel.create({ email, password: hashPassword });
 
     const userDto = new UserDto(user);
+    const tokens = tokenService.generateToken({ ...UserDto });
 
-    return { userDto };
+    await tokenService.saveToken(userDto.id, tokens.refreshToken);
+
+    return { user: userDto, ...tokens };
   }
 
   async activation(userId) {
